@@ -73,16 +73,16 @@ The user sees all messages and and optionally all tool calls, ensuring transpare
 
 ## Authentication
 
-This project uses LangGraph custom auth to authenticate requests to the server. It's configured to use Supabase as the authentication provider, however it can be easily swapped for another service.
+This project uses LangGraph custom auth to authenticate requests to the server. It's configured to use Keycloak as the authentication provider.
 
-Requests must contain an `Authorization` header with a `Bearer` token. This token should be a valid JWT token from Supabase.
+Requests must contain an `Authorization` header with a `Bearer` token. This token should be a valid JWT token from Keycloak.
 
-The auth handler then takes that token and verifies it with Supabase. If the token is valid, it returns the user's identity. If the token is invalid, it raises an exception. This means you must have a Supabase URL & key set in your environment variables to use this auth handler:
+The auth handler then takes that token and verifies it using Keycloak's JWKS. If the token is valid, it returns the user's identity. If the token is invalid, it raises an exception. This means you must have a Keycloak issuer configured in your environment variables to use this auth handler:
 
 ```bash
-SUPABASE_URL=""
-# Ensure this is your Supabase Service Role key
-SUPABASE_KEY=""
+KEYCLOAK_ISSUER=""
+# Optional; only enforced if set
+KEYCLOAK_AUDIENCE=""
 ```
 
 The auth handler is then used as middleware for all requests to the server. It is configured to run on the following events:
@@ -101,7 +101,7 @@ The auth handler is then used as middleware for all requests to the server. It i
 
 For creation methods, it auto-injects the user's ID into the metadata. This is then uses in all read/update/delete/search methods to ensure that the user can only access their own threads and assistants.
 
-By using custom authentication, we can call this LangGraph server directly from a frontend application, without having to worry about exposing API keys/secrets, since you only need a JWT token from Supabase to authenticate.
+By using custom authentication, we can call this LangGraph server directly from a frontend application, without having to worry about exposing API keys/secrets, since you only need a JWT token from Keycloak to authenticate.
 
 For more info, see our [LangGraph custom auth docs](https://langchain-ai.github.io/langgraph/tutorials/auth/getting_started/).
 
